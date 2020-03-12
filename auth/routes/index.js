@@ -3,7 +3,7 @@
 const { authenticated } = require('./helpers')
 
 function init (app) {
-  app.get('/status', (req, res) => {
+  app.get('/api/status', (req, res) => {
     res.json({ data: 'ok' })
   })
 

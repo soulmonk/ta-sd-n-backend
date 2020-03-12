@@ -5,7 +5,7 @@ const { build } = require('../helper')
 
 test('get status', async t => {
   const res = await build()
-    .get('/status')
+    .get('/api/status')
     .set('Accept', 'application/json')
     .expect('Content-Type', /json/)
     .expect(200)
