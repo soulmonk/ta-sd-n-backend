@@ -1,0 +1,46 @@
+{
+  "name": "ta-sd-n-backend-main",
+  "version": "0.0.1",
+  "description": "TA",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "pretest": "standard",
+    "start": "node app.js",
+    "test": "tap ./test/**/*.test.js",
+    "lint": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soulmonk/ta-sd-n-backend.git"
+  },
+  "keywords": [
+    "express",
+    "postgresql",
+    "microservices",
+    "rest"
+  ],
+  "author": "Vitalii Melnykov <fsoulmonk@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soulmonk/ta-sd-n-backend/issues"
+  },
+  "homepage": "https://github.com/soulmonk/ta-sd-n-backend#readme",
+  "dependencies": {
+    "bcrypt": "^4.0.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
+    "pg": "^7.18.2"
+  },
+  "devDependencies": {
+    "sinon": "^9.0.1",
+    "standard": "*",
+    "supertest": "^4.0.2",
+    "tap": "^14.10.6"
+  }
+}
