@@ -11,5 +11,14 @@ test('get status', async t => {
     .expect(200)
 
   t.deepEqual(res.body, { data: 'ok' })
-  t.end()
+})
+
+test('random url', async t => {
+  const res = await build()
+    .get('/not-found-api')
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /json/)
+    .expect(404)
+
+  t.deepEqual(res.body, { error: 'Not found' })
 })

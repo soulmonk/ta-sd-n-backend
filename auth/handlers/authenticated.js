@@ -1,4 +1,4 @@
-// TODO temporary, easy check;
+'use strict'
 
 function authenticated (request, res, next) {
   if (request.user) {
@@ -8,6 +8,4 @@ function authenticated (request, res, next) {
   res.status(403).json({ error: 'Could not authenticate' })
 }
 
-module.exports = {
-  authenticated
-}
+module.exports = authenticated
