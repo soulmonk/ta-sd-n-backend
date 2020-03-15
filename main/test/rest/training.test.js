@@ -46,7 +46,7 @@ test('get all training session', async t => {
 
 test('create training session', async t => {
   const stubCreate = sinon.stub(trainingRepository, 'createSession')
-  stubCreate.resolves()
+  stubCreate.resolves({ id: 2 })
   const res = await build()
     .post('/api/training/session')
     .send({ title: 'title 1', description: 'description 1' })
@@ -60,14 +60,13 @@ test('create training session', async t => {
     description: 'description 1'
   })
 
-  t.equal(res.body, {
+  t.deepEqual(res.body, {
     data: {
       id: 2
     }
   })
 
   stubCreate.restore()
-  t.ok(false, 'not implemented')
 })
 
 test('mark training session completed', async t => {
@@ -80,9 +79,9 @@ test('mark training session completed', async t => {
     .expect('Content-Type', /json/)
     .expect(200)
 
-  t.equal(stubComplete.getCall(0).args[0], 2)
+  t.equal(stubComplete.getCall(0).args[0], '2') // params are string type
 
-  t.equal(res.body, { success: true })
+  t.deepEqual(res.body, { success: true })
 
   stubComplete.restore()
 })
@@ -102,10 +101,10 @@ test('order training plan', async t => {
     .expect(200)
 
   t.equal(stubDbQuery.getCall(0).args[0], 'DELETE FROM "training_plan" WHERE 1')
-  t.equal(stubDbQuery.getCall(1).args[0], 'INSERT INTO "training_plan" (training_session_id, priority) VALUES (3, 1), (1, 2), (2, 3)')
-  t.equal(spyUpdatePlanOrders.getCall(0).args[0], [3, 1, 2])
+  t.equal(stubDbQuery.getCall(1).args[0], 'INSERT INTO "training_plan" (training_session_id, priority) VALUES (3,0),(1,1),(2,2)')
+  t.deepEqual(spyUpdatePlanOrders.getCall(0).args[0], [3, 1, 2])
 
-  t.equal(res.body, { success: true })
+  t.deepEqual(res.body, { success: true })
 
   stubDbQuery.restore()
   spyUpdatePlanOrders.restore()
@@ -125,7 +124,7 @@ test('reset training plan', async t => {
   t.equal(stubDbQuery.getCall(0).args[0], 'DELETE FROM "training_plan" WHERE 1')
   t.ok(spyResetPlan.calledOnce)
 
-  t.equal(res.body, { success: true })
+  t.deepEqual(res.body, { success: true })
 
   stubDbQuery.restore()
   spyResetPlan.restore()

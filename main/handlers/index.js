@@ -1,15 +1,13 @@
 'use strict'
 
-const authenticated = require('./authenticated')
-
 function init (app) {
   app.get('/api/status', (req, res) => {
     res.json({ data: 'ok' })
   })
 
-  // routes
+  require('./training')(app)
 
-  app.use('*', authenticated, (req, res, next) => {
+  app.use('*', (req, res, next) => {
     res.status(404).json({ error: 'Not found' })
   })
 
