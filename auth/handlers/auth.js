@@ -24,19 +24,19 @@ function authHandler (app) {
     }
     const { name, email, password } = req.body
 
-    let user = await userRepository.getUserByName(name)
+    let user = await userRepository.getUserByEmail(email)
     if (user) {
-      return res.status(409).json({ error: `User "${name}" already exists` })
+      return res.status(409).json({ errors: [`User "${name}" already exists`] })
     }
 
     user = await userRepository.create({ name, email, password })
 
     const token = await userRepository.generateToken(user)
 
-    res.json({ data: { token } })
+    res.json({ data: { name, token } })
   }
   const signInSchema = [
-    body('name').isLength({ min: 4 }),
+    body('email').isEmail(),
     // password must be at least 6 chars long
     body('password').isLength({ min: 6 })
   ]
@@ -47,12 +47,12 @@ function authHandler (app) {
       return res.status(422).json({ errors: errors.array() })
     }
     const error = () => res.status(400).json({
-      error: 'Wrong name or password'
+      errors: ['Wrong name or password']
     })
 
-    const { name, password } = req.body
+    const { email, password } = req.body
 
-    const user = await userRepository.getUserByName(name)
+    const user = await userRepository.getUserByEmail(email)
     if (!user) {
       return error()
     }
@@ -64,11 +64,11 @@ function authHandler (app) {
 
     const token = await userRepository.generateToken(user)
 
-    res.json({ data: { token } })
+    res.json({ data: { name: user.name, token } })
   }
 
   const onSignOut = async (req, res) => {
-    res.json({ error: 'sign-out', message: 'not implemented' })
+    res.json({ errors: ['sign-out'], message: 'not implemented' })
   }
 
   router.post('/sign-up', signUpSchema, useAsyncHandler(onSignUp))

@@ -37,13 +37,13 @@ class UserRepository {
   }
 
   // todo jsdoc
-  async getUserByName (username) {
-    if (username === null || typeof username !== 'string') {
-      throw new Error('invalid arguments: username is required')
+  async getUserByEmail (email) {
+    if (email === null || typeof email !== 'string') {
+      throw new Error('invalid arguments: email is required')
     }
     // todo optimise query
-    const { rows } = await this.db.query('SELECT * FROM "user" WHERE name=$1 limit 1', [
-      username
+    const { rows } = await this.db.query('SELECT * FROM "user" WHERE email=$1 limit 1', [
+      email
     ])
 
     return rows && rows.length && rows[0]
