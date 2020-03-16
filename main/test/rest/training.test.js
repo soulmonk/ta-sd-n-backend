@@ -69,6 +69,28 @@ test('create training session', async t => {
   stubCreate.restore()
 })
 
+test('remove training session', async t => {
+  const spyRemove = sinon.spy(trainingRepository, 'removeSession')
+  const stubDbQuery = sinon.stub(DB.instance(), 'query')
+  stubDbQuery.resolves({ rows: [] })
+  const res = await build()
+    .delete('/api/training/session/2')
+    .set('Accept', 'application/json')
+    .set('Authorization', 'Bearer ' + TOKEN)
+    .expect('Content-Type', /json/)
+    .expect(200)
+
+  t.equal(spyRemove.getCall(0).args[0], '2')
+  t.deepEqual(stubDbQuery.getCall(0).args, ['DELETE FROM "training_session" WHERE id = $1', ['2']])
+
+  t.deepEqual(res.body, {
+    success: true
+  })
+
+  spyRemove.restore()
+  stubDbQuery.restore()
+})
+
 test('mark training session completed', async t => {
   const stubComplete = sinon.stub(trainingRepository, 'complete')
   stubComplete.resolves()
@@ -100,7 +122,7 @@ test('order training plan', async t => {
     .expect('Content-Type', /json/)
     .expect(200)
 
-  t.equal(stubDbQuery.getCall(0).args[0], 'DELETE FROM "training_plan" WHERE 1')
+  t.equal(stubDbQuery.getCall(0).args[0], 'TRUNCATE TABLE "training_plan"')
   t.equal(stubDbQuery.getCall(1).args[0], 'INSERT INTO "training_plan" (training_session_id, priority) VALUES (3,0),(1,1),(2,2)')
   t.deepEqual(spyUpdatePlanOrders.getCall(0).args[0], [3, 1, 2])
 
@@ -121,7 +143,7 @@ test('reset training plan', async t => {
     .expect('Content-Type', /json/)
     .expect(200)
 
-  t.equal(stubDbQuery.getCall(0).args[0], 'DELETE FROM "training_plan" WHERE 1')
+  t.equal(stubDbQuery.getCall(0).args[0], 'TRUNCATE TABLE "training_plan"')
   t.ok(spyResetPlan.calledOnce)
 
   t.deepEqual(res.body, { success: true })

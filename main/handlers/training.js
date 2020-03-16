@@ -52,6 +52,16 @@ function init (app) {
     }).catch(next)
   }
 
+  function onRemoveSession (req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() })
+    }
+    trainingRepository.removeSession(req.params.id).then(() => {
+      res.json({ success: true })
+    }).catch(next)
+  }
+
   function onOrderPlan (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -77,6 +87,10 @@ function init (app) {
   router.put('/session/:id', [
     param('id').isInt()
   ], onCompleteSession)
+
+  router.delete('/session/:id', [
+    param('id').isInt()
+  ], onRemoveSession)
 
   router.put('/plan', [body('orders').isArray({ min: 1 })], onOrderPlan)
   router.delete('/plan', onResetPlan)

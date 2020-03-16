@@ -16,6 +16,12 @@ class TrainingRepository {
     }
   }
 
+  async removeSession (id) {
+    const { rows } = await this.db.query('DELETE FROM "training_session" WHERE id = $1', [id])
+
+    return rows[0]
+  }
+
   async complete (tsId) {
     // insert
     // assign to bank
@@ -37,6 +43,7 @@ class TrainingRepository {
   }
 
   async getInBank () {
+    // on separated plans need find better way
     const sql = `SELECT *
                  FROM "training_session" as ts
                  WHERE NOT exists(select 1 from "training_plan" as tsp where tsp.training_session_id = ts.id)`
@@ -48,13 +55,14 @@ class TrainingRepository {
   async getInPlan () {
     const sql = `SELECT ts.*, tsp.priority
                  FROM "training_plan" as tsp
-                        INNER JOIN "training_session" as ts ON tsp.training_session_id = ts.id`
+                        INNER JOIN "training_session" as ts ON tsp.training_session_id = ts.id
+                 ORDER BY tsp.priority`
     const { rows } = await this.db.query(sql)
     return rows
   }
 
   async resetPlan () {
-    const { rows } = await this.db.query('DELETE FROM "training_plan" WHERE 1')
+    const { rows } = await this.db.query('TRUNCATE TABLE "training_plan"')
 
     return {
       ...rows[0]
