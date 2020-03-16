@@ -1,0 +1,7 @@
+{
+  "user": "test",
+  "host": "localhost",
+  "database": "ta-sd-n-backend-auth",
+  "password": "toor",
+  "port": 5432
+}
