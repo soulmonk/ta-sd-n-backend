@@ -57,7 +57,8 @@ test('create training session', async t => {
 
   t.deepEqual(stubCreate.getCall(0).args[0], {
     title: 'title 1',
-    description: 'description 1'
+    description: 'description 1',
+    userId: 1
   })
 
   t.deepEqual(res.body, {
@@ -80,8 +81,8 @@ test('remove training session', async t => {
     .expect('Content-Type', /json/)
     .expect(200)
 
-  t.equal(spyRemove.getCall(0).args[0], '2')
-  t.deepEqual(stubDbQuery.getCall(0).args, ['DELETE FROM "training_session" WHERE id = $1', ['2']])
+  t.deepEqual(spyRemove.getCall(0).args, ['2', 1])
+  t.deepEqual(stubDbQuery.getCall(0).args, ['DELETE FROM "training_session" WHERE id = $1 AND user_id = $2', ['2', 1]])
 
   t.deepEqual(res.body, {
     success: true
@@ -122,7 +123,7 @@ test('order training plan', async t => {
     .expect('Content-Type', /json/)
     .expect(200)
 
-  t.equal(stubDbQuery.getCall(0).args[0], 'TRUNCATE TABLE "training_plan"')
+  t.deepEqual(stubDbQuery.getCall(0).args, ['DELETE FROM "training_plan" WHERE exists(SELECt 1 FROM "training_session" as ts WHERE ts.user_id = $1)', [1]])
   t.equal(stubDbQuery.getCall(1).args[0], 'INSERT INTO "training_plan" (training_session_id, priority) VALUES (3,0),(1,1),(2,2)')
   t.deepEqual(spyUpdatePlanOrders.getCall(0).args[0], [3, 1, 2])
 
@@ -143,7 +144,8 @@ test('reset training plan', async t => {
     .expect('Content-Type', /json/)
     .expect(200)
 
-  t.equal(stubDbQuery.getCall(0).args[0], 'TRUNCATE TABLE "training_plan"')
+  // not useful
+  t.deepEqual(stubDbQuery.getCall(0).args, ['DELETE FROM "training_plan" WHERE exists(SELECt 1 FROM "training_session" as ts WHERE ts.user_id = $1)', [1]])
   t.ok(spyResetPlan.calledOnce)
 
   t.deepEqual(res.body, { success: true })

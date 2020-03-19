@@ -17,9 +17,5 @@ create table "training_plan"
         constraint training_session_tsid_fkey
             references training_session
             on update cascade,
-    priority integer,
-    user_id integer not null
+    priority integer
 );
-
-create index training_plan_user_id_index
-    on training_plan (user_id);

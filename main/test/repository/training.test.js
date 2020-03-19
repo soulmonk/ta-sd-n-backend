@@ -13,12 +13,13 @@ test('create session', async t => {
   stubQuery.resolves({ rows: [{ id: 2 }] })
   await trainingRepository.createSession({
     title: 'title 1',
-    description: 'description 1'
+    description: 'description 1',
+    userId: 1
   })
 
   t.deepEqual(stubQuery.getCall(0).args, [
-    'INSERT INTO "training_session" (title, description) VALUES ($1, $2) RETURNING id',
-    ['title 1', 'description 1']
+    'INSERT INTO "training_session" (title, description, user_id) VALUES ($1, $2, $3) RETURNING id',
+    ['title 1', 'description 1', 1]
   ])
 
   stubQuery.restore()

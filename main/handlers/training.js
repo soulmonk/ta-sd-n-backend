@@ -21,7 +21,8 @@ function init (app) {
   const router = express.Router()
 
   function onAllSession (req, res, next) {
-    Promise.all([trainingRepository.getInPlan(), trainingRepository.getInBank()])
+    const userId = req.user.id
+    Promise.all([trainingRepository.getInPlan(userId), trainingRepository.getInBank(userId)])
       .then(([plan, bank]) => {
         res.json({
           data: {
@@ -37,7 +38,9 @@ function init (app) {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() })
     }
-    trainingRepository.createSession(req.body).then(data => {
+    const { title, description } = req.body
+
+    trainingRepository.createSession({ title, description, userId: req.user.id }).then(data => {
       res.json({ data })
     }).catch(next)
   }
@@ -47,7 +50,7 @@ function init (app) {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() })
     }
-    trainingRepository.complete(req.params.id).then(() => {
+    trainingRepository.complete(req.params.id, req.user.id).then(() => {
       res.json({ success: true })
     }).catch(next)
   }
@@ -57,7 +60,7 @@ function init (app) {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() })
     }
-    trainingRepository.removeSession(req.params.id).then(() => {
+    trainingRepository.removeSession(req.params.id, req.user.id).then(() => {
       res.json({ success: true })
     }).catch(next)
   }
@@ -67,13 +70,14 @@ function init (app) {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() })
     }
-    trainingRepository.updatePlanOrders(req.body.orders).then(() => {
+    // todo all ts must belong to the logged-in user
+    trainingRepository.updatePlanOrders(req.body.orders, req.user.id).then(() => {
       res.json({ success: true })
     }).catch(next)
   }
 
   function onResetPlan (req, res, next) {
-    trainingRepository.resetPlan().then(() => {
+    trainingRepository.resetPlan(req.user.id).then(() => {
       res.json({ success: true })
     }).catch(next)
   }
