@@ -64,7 +64,7 @@ class TrainingRepository {
   }
 
   async resetPlan (userId) {
-    const query = 'DELETE FROM "training_plan" WHERE exists(SELECt 1 FROM "training_session" as ts WHERE ts.user_id = $1)'
+    const query = 'DELETE FROM "training_plan" as tsp WHERE exists(SELECt 1 FROM "training_session" as ts WHERE tsp.training_session_id = ts.id and ts.user_id = $1)'
     const { rows } = await this.db.query(query, [userId])
 
     return {

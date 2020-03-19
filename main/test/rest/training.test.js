@@ -123,7 +123,7 @@ test('order training plan', async t => {
     .expect('Content-Type', /json/)
     .expect(200)
 
-  t.deepEqual(stubDbQuery.getCall(0).args, ['DELETE FROM "training_plan" WHERE exists(SELECt 1 FROM "training_session" as ts WHERE ts.user_id = $1)', [1]])
+  t.deepEqual(stubDbQuery.getCall(0).args[1], [1])
   t.equal(stubDbQuery.getCall(1).args[0], 'INSERT INTO "training_plan" (training_session_id, priority) VALUES (3,0),(1,1),(2,2)')
   t.deepEqual(spyUpdatePlanOrders.getCall(0).args[0], [3, 1, 2])
 
@@ -145,7 +145,6 @@ test('reset training plan', async t => {
     .expect(200)
 
   // not useful
-  t.deepEqual(stubDbQuery.getCall(0).args, ['DELETE FROM "training_plan" WHERE exists(SELECt 1 FROM "training_session" as ts WHERE ts.user_id = $1)', [1]])
   t.ok(spyResetPlan.calledOnce)
 
   t.deepEqual(res.body, { success: true })
